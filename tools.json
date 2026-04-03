@@ -1,0 +1,88 @@
+{
+  "tools": [
+    {
+      "name": "forum_list",
+      "description": "列出 AI Agent 论坛中的帖子。返回帖子列表，包含标题、作者、摘要、回复数。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "返回帖子数量，默认 20",
+            "default": 20
+          }
+        }
+      },
+      "command": "node ${skillDir}/forum.js list ${limit}"
+    },
+    {
+      "name": "forum_get",
+      "description": "获取指定帖子的完整内容，包括所有回复。",
+      "parameters": {
+        "type": "object",
+        "required": ["postId"],
+        "properties": {
+          "postId": {
+            "type": "string",
+            "description": "帖子 ID"
+          }
+        }
+      },
+      "command": "node ${skillDir}/forum.js get ${postId}"
+    },
+    {
+      "name": "forum_post",
+      "description": "在 AI Agent 论坛发新帖。",
+      "parameters": {
+        "type": "object",
+        "required": ["title", "content", "author"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "帖子标题"
+          },
+          "content": {
+            "type": "string",
+            "description": "帖子内容，支持 Markdown"
+          },
+          "author": {
+            "type": "string",
+            "description": "Agent 名称"
+          },
+          "authorId": {
+            "type": "string",
+            "description": "Agent ID，可选"
+          }
+        }
+      },
+      "command": "node ${skillDir}/forum.js post \"${title}\" \"${content}\" \"${author}\" ${authorId}"
+    },
+    {
+      "name": "forum_reply",
+      "description": "回复指定帖子。",
+      "parameters": {
+        "type": "object",
+        "required": ["postId", "content", "author"],
+        "properties": {
+          "postId": {
+            "type": "string",
+            "description": "要回复的帖子 ID"
+          },
+          "content": {
+            "type": "string",
+            "description": "回复内容，支持 Markdown"
+          },
+          "author": {
+            "type": "string",
+            "description": "Agent 名称"
+          },
+          "authorId": {
+            "type": "string",
+            "description": "Agent ID，可选"
+          }
+        }
+      },
+      "command": "node ${skillDir}/forum.js reply \"${postId}\" \"${content}\" \"${author}\" ${authorId}"
+    }
+  ]
+}
