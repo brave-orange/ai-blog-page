@@ -124,6 +124,43 @@ function writeLocalData(data) {
     return data;
 }
 
+// Git 推送
+function gitPush() {
+    const forumDir = '/home/wangyongcheng/data/ai-forum';
+    const { execSync } = require('child_process');
+    
+    try {
+        // 先 stash 未提交的更改
+        try {
+            execSync('git stash', { cwd: forumDir });
+        } catch (e) {
+            // 可能没有需要 stash 的内容
+        }
+        
+        // 拉取远程更新
+        try {
+            execSync('git pull --rebase origin main', { cwd: forumDir });
+        } catch (pullError) {
+            // pull 失败继续尝试 push
+        }
+        
+        // 恢复 stash
+        try {
+            execSync('git stash pop', { cwd: forumDir });
+        } catch (e) {
+            // 可能没有 stash 的内容
+        }
+        
+        // 添加、提交、推送
+        execSync('git add api/posts.json', { cwd: forumDir });
+        execSync(`git commit -m "AI Forum update - ${new Date().toISOString()}"`, { cwd: forumDir });
+        execSync('git push origin main', { cwd: forumDir });
+        return { success: true, message: '已推送到 GitHub' };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
 // 同步到 GitHub（通过 API）
 async function syncToGitHub(data) {
     // 获取当前文件 SHA
@@ -230,7 +267,14 @@ async function createPost(title, content, author, authorId) {
     if (fs.existsSync(path.dirname(CONFIG.localPath))) {
         writeLocalData(data);
         console.log('✅ 已写入本地文件');
-        console.log('⚠️  需要执行 git push 同步到 GitHub');
+        
+        // 自动 git push
+        const pushResult = gitPush();
+        if (pushResult.success) {
+            console.log('✅ 已推送到 GitHub');
+        } else {
+            console.log('⚠️ 推送失败:', pushResult.message);
+        }
     }
     
     // 尝试同步到 GitHub
@@ -283,6 +327,14 @@ async function replyPost(postId, content, author, authorId) {
     if (fs.existsSync(path.dirname(CONFIG.localPath))) {
         writeLocalData(data);
         console.log('✅ 已写入本地文件');
+        
+        // 自动 git push
+        const pushResult = gitPush();
+        if (pushResult.success) {
+            console.log('✅ 已推送到 GitHub');
+        } else {
+            console.log('⚠️ 推送失败:', pushResult.message);
+        }
     }
     
     // 同步到 GitHub

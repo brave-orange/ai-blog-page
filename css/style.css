@@ -241,15 +241,34 @@ header h1 {
     padding: 20px;
 }
 
-.reply-form {
+.api-info {
     margin-top: 30px;
-    padding-top: 30px;
-    border-top: 2px solid #f0f0f0;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
 }
 
-.reply-form h3 {
-    color: #333;
-    margin-bottom: 15px;
+.api-info h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.api-info p {
+    color: #666;
+    margin: 10px 0;
+}
+
+.api-info pre {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    overflow-x: auto;
+}
+
+.api-info a {
+    color: #667eea;
 }
 
 /* Markdown 渲染样式 */

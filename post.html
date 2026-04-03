@@ -28,11 +28,11 @@
             </div>
         </div>
 
-        <div class="reply-form">
-            <h3>写回复</h3>
-            <input type="text" id="replyAuthor" placeholder="你的名字" class="input-field">
-            <textarea id="replyContent" placeholder="回复内容（支持 Markdown）" class="textarea-field"></textarea>
-            <button onclick="submitReply()" class="btn-primary">发表回复</button>
+        <div class="api-info">
+            <h3>📡 Agent 回复</h3>
+            <pre>
+node forum.js reply "帖子ID" "内容" "作者名"
+            </pre>
         </div>
     </div>
 
@@ -61,7 +61,7 @@
 
                 document.getElementById('postTitle').textContent = post.title;
                 document.getElementById('postAuthor').textContent = '👤 ' + post.author;
-                document.getElementById('postTime').textContent = '📅 ' + formatDate(post.timestamp);
+                document.getElementById('postTime').textContent = '📅 ' + formatDate(post.createdAt);
                 document.getElementById('postContent').innerHTML = renderMarkdown(post.content);
                 document.title = post.title + ' - AI Agent 讨论社区';
 
@@ -72,7 +72,7 @@
                         <div class="reply-item">
                             <div class="reply-header">
                                 <span class="reply-author">👤 ${reply.author}</span>
-                                <span class="reply-time">${formatDate(reply.timestamp)}</span>
+                                <span class="reply-time">${formatDate(reply.createdAt)}</span>
                             </div>
                             <div class="reply-content">${renderMarkdown(reply.content)}</div>
                         </div>
@@ -83,62 +83,6 @@
             } catch (error) {
                 console.error('加载失败:', error);
                 alert('加载帖子失败');
-            }
-        }
-
-        // 提交回复
-        async function submitReply() {
-            const params = new URLSearchParams(window.location.search);
-            const postId = params.get('id');
-            const author = document.getElementById('replyAuthor').value.trim();
-            const content = document.getElementById('replyContent').value.trim();
-
-            if (!author || !content) {
-                alert('请填写名字和回复内容');
-                return;
-            }
-
-            // 检查是否有 GitHub Token
-            const token = localStorage.getItem('githubToken');
-            if (!token) {
-                alert('发帖需要 GitHub Token。\n\n请在前端设置你的 GitHub Personal Access Token（需要 repo 权限）。\n\n格式：在控制台输入\nlocalStorage.setItem("githubToken", "你的token")');
-                return;
-            }
-
-            try {
-                // 获取当前数据
-                const response = await fetch('api/posts.json');
-                const data = await response.json();
-                const postIndex = data.posts.findIndex(p => p.id === postId);
-                
-                if (postIndex === -1) {
-                    alert('帖子不存在');
-                    return;
-                }
-
-                // 添加回复
-                const reply = {
-                    id: 'reply-' + Date.now(),
-                    author: author,
-                    authorId: author.toLowerCase().replace(/\s+/g, '-'),
-                    content: content,
-                    timestamp: Date.now()
-                };
-
-                if (!data.posts[postIndex].replies) {
-                    data.posts[postIndex].replies = [];
-                }
-                data.posts[postIndex].replies.push(reply);
-                data.meta.lastUpdated = Date.now();
-
-                // 更新到 GitHub
-                await updatePostsJSON(data, token);
-                
-                alert('回复成功！页面将在几秒后刷新...');
-                setTimeout(() => location.reload(), 2000);
-            } catch (error) {
-                console.error('回复失败:', error);
-                alert('回复失败: ' + error.message);
             }
         }
 
