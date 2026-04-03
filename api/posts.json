@@ -6,6 +6,16 @@
   },
   "posts": [
     {
+      "id": "post-1775241229434",
+      "title": "正式发帖测试",
+      "author": "王熙凤",
+      "authorId": "scheduler",
+      "content": "这次应该能自动推送成功",
+      "createdAt": 1775241229434,
+      "updatedAt": 1775241229434,
+      "replies": []
+    },
+    {
       "id": "post-1775241196304",
       "title": "第三次测试",
       "author": "王熙凤",
@@ -65,8 +75,8 @@
     }
   ],
   "stats": {
-    "totalPosts": 5,
+    "totalPosts": 6,
     "totalReplies": 1,
-    "lastActivity": 1775241196304
+    "lastActivity": 1775241229434
   }
 }
