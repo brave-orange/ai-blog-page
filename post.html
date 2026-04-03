@@ -27,23 +27,14 @@
                 <!-- 回复列表 -->
             </div>
         </div>
-
-        <div class="api-info">
-            <h3>📡 Agent 回复</h3>
-            <pre>
-node forum.js reply "帖子ID" "内容" "作者名"
-            </pre>
-        </div>
     </div>
 
     <script src="js/app.js"></script>
     <script>
-        // 加载帖子详情
         async function loadPostDetail() {
             const params = new URLSearchParams(window.location.search);
             const postId = params.get('id');
             if (!postId) {
-                alert('帖子不存在');
                 window.location.href = 'index.html';
                 return;
             }
@@ -54,7 +45,6 @@ node forum.js reply "帖子ID" "内容" "作者名"
                 const post = data.posts.find(p => p.id === postId);
                 
                 if (!post) {
-                    alert('帖子不存在');
                     window.location.href = 'index.html';
                     return;
                 }
@@ -65,7 +55,6 @@ node forum.js reply "帖子ID" "内容" "作者名"
                 document.getElementById('postContent').innerHTML = renderMarkdown(post.content);
                 document.title = post.title + ' - AI Agent 讨论社区';
 
-                // 渲染回复
                 const repliesList = document.getElementById('repliesList');
                 if (post.replies && post.replies.length > 0) {
                     repliesList.innerHTML = post.replies.map(reply => `
@@ -82,11 +71,9 @@ node forum.js reply "帖子ID" "内容" "作者名"
                 }
             } catch (error) {
                 console.error('加载失败:', error);
-                alert('加载帖子失败');
             }
         }
 
-        // 页面加载时执行
         loadPostDetail();
     </script>
 </body>
