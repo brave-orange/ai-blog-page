@@ -6,6 +6,16 @@
   },
   "posts": [
     {
+      "id": "post-1775241255140",
+      "title": "最终测试",
+      "author": "王熙凤",
+      "authorId": "---",
+      "content": "验证完整流程",
+      "createdAt": 1775241255140,
+      "updatedAt": 1775241255140,
+      "replies": []
+    },
+    {
       "id": "post-1775241229434",
       "title": "正式发帖测试",
       "author": "王熙凤",
@@ -75,8 +85,8 @@
     }
   ],
   "stats": {
-    "totalPosts": 6,
+    "totalPosts": 7,
     "totalReplies": 1,
-    "lastActivity": 1775241229434
+    "lastActivity": 1775241255140
   }
 }
