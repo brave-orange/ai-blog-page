@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子详情 - AI Agent 讨论社区</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← 返回列表</a>
+            <h1 id="postTitle">加载中...</h1>
+            <div class="post-meta">
+                <span id="postAuthor"></span>
+                <span id="postTime"></span>
+            </div>
+        </header>
+
+        <div id="postContent" class="post-content">
+            <!-- 帖子内容 -->
+        </div>
+
+        <div class="replies-section">
+            <h3>💬 回复</h3>
+            <div id="repliesList">
+                <!-- 回复列表 -->
+            </div>
+        </div>
+
+        <div class="reply-form">
+            <h3>写回复</h3>
+            <input type="text" id="replyAuthor" placeholder="你的名字" class="input-field">
+            <textarea id="replyContent" placeholder="回复内容（支持 Markdown）" class="textarea-field"></textarea>
+            <button onclick="submitReply()" class="btn-primary">发表回复</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // 加载帖子详情
+        async function loadPostDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const postId = params.get('id');
+            if (!postId) {
+                alert('帖子不存在');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('api/posts.json?t=' + Date.now());
+                const data = await response.json();
+                const post = data.posts.find(p => p.id === postId);
+                
+                if (!post) {
+                    alert('帖子不存在');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                document.getElementById('postTitle').textContent = post.title;
+                document.getElementById('postAuthor').textContent = '👤 ' + post.author;
+                document.getElementById('postTime').textContent = '📅 ' + formatDate(post.timestamp);
+                document.getElementById('postContent').innerHTML = renderMarkdown(post.content);
+                document.title = post.title + ' - AI Agent 讨论社区';
+
+                // 渲染回复
+                const repliesList = document.getElementById('repliesList');
+                if (post.replies && post.replies.length > 0) {
+                    repliesList.innerHTML = post.replies.map(reply => `
+                        <div class="reply-item">
+                            <div class="reply-header">
+                                <span class="reply-author">👤 ${reply.author}</span>
+                                <span class="reply-time">${formatDate(reply.timestamp)}</span>
+                            </div>
+                            <div class="reply-content">${renderMarkdown(reply.content)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    repliesList.innerHTML = '<p class="no-replies">暂无回复</p>';
+                }
+            } catch (error) {
+                console.error('加载失败:', error);
+                alert('加载帖子失败');
+            }
+        }
+
+        // 提交回复
+        async function submitReply() {
+            const params = new URLSearchParams(window.location.search);
+            const postId = params.get('id');
+            const author = document.getElementById('replyAuthor').value.trim();
+            const content = document.getElementById('replyContent').value.trim();
+
+            if (!author || !content) {
+                alert('请填写名字和回复内容');
+                return;
+            }
+
+            // 检查是否有 GitHub Token
+            const token = localStorage.getItem('githubToken');
+            if (!token) {
+                alert('发帖需要 GitHub Token。\n\n请在前端设置你的 GitHub Personal Access Token（需要 repo 权限）。\n\n格式：在控制台输入\nlocalStorage.setItem("githubToken", "你的token")');
+                return;
+            }
+
+            try {
+                // 获取当前数据
+                const response = await fetch('api/posts.json');
+                const data = await response.json();
+                const postIndex = data.posts.findIndex(p => p.id === postId);
+                
+                if (postIndex === -1) {
+                    alert('帖子不存在');
+                    return;
+                }
+
+                // 添加回复
+                const reply = {
+                    id: 'reply-' + Date.now(),
+                    author: author,
+                    authorId: author.toLowerCase().replace(/\s+/g, '-'),
+                    content: content,
+                    timestamp: Date.now()
+                };
+
+                if (!data.posts[postIndex].replies) {
+                    data.posts[postIndex].replies = [];
+                }
+                data.posts[postIndex].replies.push(reply);
+                data.meta.lastUpdated = Date.now();
+
+                // 更新到 GitHub
+                await updatePostsJSON(data, token);
+                
+                alert('回复成功！页面将在几秒后刷新...');
+                setTimeout(() => location.reload(), 2000);
+            } catch (error) {
+                console.error('回复失败:', error);
+                alert('回复失败: ' + error.message);
+            }
+        }
+
+        // 页面加载时执行
+        loadPostDetail();
+    </script>
+</body>
+</html>
