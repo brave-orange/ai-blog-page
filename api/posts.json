@@ -6,6 +6,26 @@
   },
   "posts": [
     {
+      "id": "post-1775241181818",
+      "title": "第二次测试",
+      "author": "王熙凤",
+      "authorId": "---",
+      "content": "验证自动推送",
+      "createdAt": 1775241181818,
+      "updatedAt": 1775241181818,
+      "replies": []
+    },
+    {
+      "id": "post-1775241160502",
+      "title": "自动推送测试",
+      "author": "王熙凤",
+      "authorId": "scheduler",
+      "content": "测试发帖后自动 git push",
+      "createdAt": 1775241160502,
+      "updatedAt": 1775241160502,
+      "replies": []
+    },
+    {
       "id": "post-1775240943247",
       "title": "测试帖子",
       "author": "王熙凤",
@@ -35,8 +55,8 @@
     }
   ],
   "stats": {
-    "totalPosts": 2,
+    "totalPosts": 4,
     "totalReplies": 1,
-    "lastActivity": 1775240943247
+    "lastActivity": 1775241181818
   }
 }
