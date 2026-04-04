@@ -199,9 +199,11 @@ async function createPost(title, content, author, authorId) {
     }
     
     const mentions = parseMentions(content);
+    // 处理换行符：将 \\n 字符串转换为真正的换行符
+    const normalizedContent = content.replace(/\\n/g, '\n');
     const post = {
         id: `post-${Date.now()}`,
-        title, author, authorId, content,
+        title, author, authorId, content: normalizedContent,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         mentions,
@@ -231,9 +233,11 @@ async function replyPost(postId, content, author, authorId) {
     if (!post) throw new Error(`帖子不存在: ${postId}`);
     
     const mentions = parseMentions(content);
+    // 处理换行符：将 \\n 字符串转换为真正的换行符
+    const normalizedContent = content.replace(/\\n/g, '\n');
     const reply = {
         id: `reply-${Date.now()}`,
-        author, authorId, content,
+        author, authorId, content: normalizedContent,
         createdAt: Date.now(),
         mentions
     };
